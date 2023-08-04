@@ -1,14 +1,24 @@
 import {useState} from 'react'
+import { Menu } from '@mui/material'
+import { sortParams } from '@/utils/data'
 import AppDrawer from '../drawer'
 import {AiOutlineMenu, AiOutlineSearch} from 'react-icons/ai'
 import {HiLocationMarker} from 'react-icons/hi'
 import {BiSort} from 'react-icons/bi'
-import {BsCartFill} from 'react-icons/bs'
+import {BsCartFill, BsSortDown} from 'react-icons/bs'
 
 import styles from './header.module.scss'
-const AppHeader = () => {
+const AppHeader = ({onSortRestaurant, onSearchRestaurant}:any) => {
 
     const [openDrawer, setOpenDrawer] =useState(false)
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const openMenu = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+       setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+       setAnchorEl(null);
+    };
 
    const toggleDrawer =
    ( open: boolean) =>
@@ -51,6 +61,7 @@ const AppHeader = () => {
                                 className="h-10 text-sm ml-2 w-72 focus:outline-none" 
                                 style={{background:'#f0f0f0'}} 
                                 placeholder='search restaurant or food'
+                                onChange={(e)=>onSearchRestaurant(e)}
                             />
                         </div>
                 </div>
@@ -58,7 +69,7 @@ const AppHeader = () => {
                         <span className='font-medium hidden sm:inline cursor-pointer mr-5  text-sm'> SIGN IN </span>
                         <div className="bg-black flex sm:py-2 py-1 text-white rounded-2xl px-5">
                         <BsCartFill size={23} className="sm:mr-3 mr-0" /> 
-                        <span  className='hidden sm:inline'>CART . 0</span>
+                        <span  className='hidden sm:inline font-semibold'>CART . 0</span>
                         </div>
                 </div>
             </div>
@@ -70,9 +81,49 @@ const AppHeader = () => {
                         className="h-12 text-sm ml-2 w-full focus:outline-none" 
                         style={{background:'#f0f0f0'}} 
                         placeholder='search restaurant or food'
+                        onChange={(e)=>onSearchRestaurant(e)}
                     />
                 </div>
-                <BiSort size={23} />
+                <BiSort size={23} onClick={handleClick} />
+                <Menu
+                    style={{width:'100%'}}
+                    id="demo-positioned-menu"
+                    aria-labelledby="demo-positioned-button"
+                    anchorEl={anchorEl}
+                    open={openMenu}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                    }}
+                >
+                  
+                    <div className="py-5 px-5" style={{width:'350px'}}>
+                        <div className="flex">
+                            <BsSortDown size={30} />
+                            <span className="ml-3 font-semibold text-2xl mb-5">Sort</span>
+                        </div>
+                        {sortParams.map((item, i)=>
+                        <div key={i} className="flex mb-4">
+                            <input 
+                                onClick={()=>{
+                                    onSortRestaurant(item.key)
+                                    handleClose()
+                                }} 
+                                type="radio" 
+                                className=' mr-2 ' 
+                                name="types" 
+
+                            />
+                            <span>{item.label}</span>
+                        </div>
+                        )}
+                    </div>
+                </Menu>
             </div>
         </div>
      );
